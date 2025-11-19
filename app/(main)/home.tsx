@@ -1,0 +1,180 @@
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  TextInput,
+  FlatList,
+} from "react-native";
+import React from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const home = () => {
+  // Minimal placeholder data (UI only)
+  const categories = [
+    { id: 1, name: "Fruits", icon: "🍎", color: "bg-red-100" },
+    { id: 2, name: "Vegetables", icon: "🥬", color: "bg-green-100" },
+    { id: 3, name: "Dairy", icon: "🥛", color: "bg-blue-100" },
+    { id: 4, name: "Electronics", icon: "🥛", color: "bg-blue-100" },
+    { id: 5, name: "Clothes", icon: "🥛", color: "bg-blue-100" },
+    { id: 6, name: "Snacks", icon: "🥛", color: "bg-blue-100" },
+  ];
+
+  const products = [
+    {
+      id: 1,
+      name: "Tomatoes",
+      price: "₹49",
+      image: "🍅",
+      category: "Vegetables",
+    },
+    { id: 2, name: "Bananas", price: "₹39", image: "🍌", category: "Fruits" },
+    { id: 3, name: "Milk", price: "₹65", image: "🥛", category: "Dairy" },
+  ];
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      {/* Header */}
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="bg-emerald-600 px-4 pt-2 pb-4">
+          <View className="flex-row items-center justify-between mb-3">
+            <View className="flex-1">
+              <Text className="text-white text-xs opacity-90">Delivery to</Text>
+              <View className="flex-row items-center">
+                <Text className="text-white text-base font-bold mr-1">
+                  Home
+                </Text>
+                <Text className="text-white text-lg">▼</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity className="bg-white/20 px-3 py-2 rounded-full">
+              <Text className="text-white text-xs font-semibold">
+                📍 Change
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Search Bar */}
+          <View className="bg-white rounded-xl px-4 py-3 flex-row items-center">
+            <Text className="text-gray-400 mr-2">🔍</Text>
+            <TextInput
+              className="flex-1 text-gray-800"
+              placeholder="Search for products..."
+              placeholderTextColor="#9CA3AF"
+            />
+          </View>
+        </View>
+
+        {/* Delivery Banner */}
+
+        <View className="bg-emerald-50 px-4 py-3 flex-row items-center justify-between border-b border-emerald-100">
+          <View className="flex-row items-center">
+            <Text className="text-2xl mr-2">⚡</Text>
+            <View>
+              <Text className="text-emerald-800 font-bold text-sm">
+                Delivery in 10-15 mins
+              </Text>
+              <Text className="text-emerald-600 text-xs">
+                Express delivery available
+              </Text>
+            </View>
+          </View>
+
+          <TouchableOpacity>
+            <Text className="text-emerald-600 font-semibold text-xs">
+              View All
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Categories */}
+
+        <View className="px-4 py-4 bg-white">
+          <Text className="text-lg font-bold text-gray-800 mb-3">
+            Categories
+          </Text>
+          <FlatList
+            data={categories}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View className="items-center mr-4">
+                <View
+                  className={`w-16 h-16 rounded-full ${item.color} items-center justify-center mb-2`}
+                >
+                  <Text className="text-3xl">{item.icon}</Text>
+                </View>
+                <Text className="text-xs font-medium text-gray-700">
+                  {item.name}
+                </Text>
+              </View>
+            )}
+          />
+        </View>
+
+        
+        {/* BEST SELLERS */}
+        {/* <View className="px-4 py-4">
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="text-lg font-bold text-gray-800">
+              Best Sellers
+            </Text>
+            <TouchableOpacity>
+              <Text className="text-emerald-600 font-semibold text-sm">
+                View All →
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <FlatList
+            data={products}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+
+            renderItem={({ item }) => (
+              <View
+                className="bg-white rounded-xl p-3 mr-3 shadow-sm border border-gray-100"
+                style={{ width: 150 }}
+              >
+                <View className="w-full h-24 bg-gray-50 rounded-lg items-center justify-center mb-2">
+                  <Text className="text-5xl">{item.image}</Text>
+                </View>
+
+                <Text
+                  className="text-sm font-semibold text-gray-800"
+                  numberOfLines={1}
+                >
+                  {item.name}
+                </Text>
+                <Text className="text-xs text-gray-500">{item.category}</Text>
+
+                <View className="flex-row items-center justify-between mt-2">
+                  <Text className="text-lg font-bold text-emerald-600">
+                    {item.price}
+                  </Text>
+                  <TouchableOpacity className="bg-emerald-600 px-3 py-1 rounded-lg">
+                    <Text className="text-white text-xs font-semibold">
+                      Add
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          />
+        </View>
+
+        {/* EXTRA SPACE */}
+       
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default home;
+
+const styles = StyleSheet.create({});

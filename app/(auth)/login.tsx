@@ -151,29 +151,53 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   // (kept for compatibility; Tailwind via className does the heavy lifting)
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
   content: { flex: 1, justifyContent: 'center', padding: 20 },
-  title: { fontSize: 36, fontWeight: 'bold', color: '#1E88E5', marginBottom: 8, textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#666', marginBottom: 32, textAlign: 'center' },
+  title: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#065f46', // emerald-800-ish
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  subtitle: {
+      fontSize: 16,
+      color: '#0f766e', // teal/emerald tint
+      marginBottom: 32,
+      textAlign: 'center',
+  },  
   form: { width: '100%' },
   inputContainer: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 8 },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#065f46',
+    marginBottom: 8,
+  },
   input: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', borderRadius: 12, padding: 16, fontSize: 16, color: '#333' },
   loginButton: {
-    backgroundColor: '#1E88E5',
+    backgroundColor: '#059669', // emerald-600-ish
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
     marginTop: 8,
-    shadowColor: '#1E88E5',
+    shadowColor: '#059669',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 5,
   },
   loginButtonDisabled: { opacity: 0.6 },
-  loginButtonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  loginButtonText: { 
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
   linkButton: { marginTop: 24, alignItems: 'center' },
-  linkText: { fontSize: 14, color: '#666' },
-  linkTextBold: { color: '#1E88E5', fontWeight: '600' },
+  linkText: { fontSize: 14, color: '#065f46', },
+  linkTextBold: { color: '#065f46',
+    fontWeight: '800', },
 });

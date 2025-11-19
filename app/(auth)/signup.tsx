@@ -1,45 +1,75 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { authApi, saveToken } from '../../utils/api.js';
 
-export default function SignupScreen() {
+export default function SignupScreenUI() {
+
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('')
 
-  const handleSignup = async () => {
-    if (!name || !email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+
+   const handleSignUp = async ()=>{
+    // Reset error
+    setError('');
+
+    // Validation
+    if (!name.trim()) {
+      setError('Please enter your name');
       return;
     }
 
-    if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
+    if (!email.trim()) {
+      setError('Please enter your email');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters long');
       return;
     }
 
     setLoading(true);
-    // try {
-    //   console.log('Attempting signup with:', { name, email, password: '***' });
-    //   const response = await authAPI.signup(name, email, password);
-    //   console.log('Signup response:', response);
+
+    try {
+      const response = await authApi.signup(name.trim(), email.trim(), password);
       
-    //   if (response.success) {
-    //     Alert.alert('Success', 'Account created successfully!');
-    //     router.replace('/(tabs)/home' as any);
-    //   } else {
-    //     Alert.alert('Error', response.message || 'Signup failed');
-    //   }
-    // } catch (error: any) {
-    //   console.error('Signup error details:', error);
-    //   const errorMessage = error?.message || 'Something went wrong. Please try again.';
-    //   Alert.alert('Signup Failed', errorMessage);
-    // } finally {
-    //   setLoading(false);
-    // }
-  };
+      if (response.success && response.data?.token) {
+        // Save token
+        console.log("Signup response:", response);
+
+        await saveToken(response.data.token);
+        
+        // Show success message
+        Alert.alert("Success", "Account created successfully!");
+
+        // Navigate immediately after alert
+        if (Platform.OS === "web") {
+          router.push("/(main)/home");
+        } else {
+          router.replace("/(main)/home");
+        }
+
+      } else {
+        setError(response.message || 'Sign up failed. Please try again.');
+      }
+    } catch (error) {
+      console.error("Error on Sign up:", error);
+     
+    } finally {
+      setLoading(false);
+    }
+  }
+
 
   return (
     <KeyboardAvoidingView 
@@ -59,9 +89,6 @@ export default function SignupScreen() {
         <View style={styles.content} className="justify-center">
           {/* Header / Logo */}
           <View className="items-center mb-6 mt-6">
-            <View className="h-16 w-16 rounded-2xl bg-emerald-600 items-center justify-center shadow">
-              {/* <Text className="text-white text-3xl">🥬</Text> */}
-            </View>
             <Text style={styles.title} className="mt-4 text-3xl font-extrabold text-emerald-800">
               Sign Up
             </Text>
@@ -87,7 +114,10 @@ export default function SignupScreen() {
                   placeholder="Your full name"
                   placeholderTextColor="#6b7280"
                   value={name}
-                  onChangeText={setName}
+                  // onChangeText={setName}
+                  onChangeText={(text) => {
+                    setName(text)
+                  }}
                   autoCapitalize="words"
                   autoComplete="name"
                 />
@@ -102,9 +132,11 @@ export default function SignupScreen() {
                   className="bg-white border border-emerald-200 rounded-2xl px-4 py-4 text-emerald-900"
                   placeholder="you@example.com"
                   placeholderTextColor="#6b7280"
-                  value={email}
-                  onChangeText={setEmail}
                   keyboardType="email-address"
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text)
+                  }}
                   autoCapitalize="none"
                   autoComplete="email"
                 />
@@ -120,7 +152,9 @@ export default function SignupScreen() {
                   placeholder="Create a strong password"
                   placeholderTextColor="#6b7280"
                   value={password}
-                  onChangeText={setPassword}
+                  onChangeText={(text) => {
+                    setPassword(text)
+                  }}
                   secureTextEntry
                   autoCapitalize="none"
                   autoComplete="password-new"
@@ -132,18 +166,17 @@ export default function SignupScreen() {
               </Text>
 
               <TouchableOpacity 
-                style={[styles.signupButton, loading && styles.signupButtonDisabled]} 
-                className={`rounded-2xl py-4 items-center mt-4 ${loading ? 'bg-emerald-500/70' : 'bg-emerald-600'} shadow`}
-                onPress={handleSignup}
-                disabled={loading}
+                style={styles.signupButton}
+                className="rounded-2xl py-4 items-center mt-4 bg-emerald-600 shadow"
+                onPress={handleSignUp}
+                activeOpacity={0.8}
               >
-                {loading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.signupButtonText} className="text-white text-lg font-semibold">
-                    Create Account
-                  </Text>
-                )}
+                <Text 
+                style={styles.signupButtonText} 
+                className="text-white text-lg font-semibold"
+                >
+                  Create Account
+                </Text>
               </TouchableOpacity>
 
               <View className="flex-row items-center my-4">
@@ -152,7 +185,7 @@ export default function SignupScreen() {
                 <View className="flex-1 h-[1px] bg-emerald-100" />
               </View>
 
-              <TouchableOpacity className="rounded-2xl py-3 border border-emerald-200 bg-white items-center">
+              <TouchableOpacity className="rounded-2xl py-3 border border-emerald-200 bg-white items-center" activeOpacity={0.8}>
                 <Text className="text-emerald-800 font-semibold">Sign up with Google</Text>
               </TouchableOpacity>
 
@@ -160,6 +193,7 @@ export default function SignupScreen() {
                 style={styles.linkButton}
                 className="mt-6 items-center"
                 onPress={() => router.push('/login' as any)}
+                activeOpacity={0.8}
               >
                 <Text style={styles.linkText} className="text-emerald-700">
                   Already have an account? <Text style={styles.linkTextBold} className="text-emerald-700 font-extrabold">Login</Text>
@@ -181,7 +215,7 @@ export default function SignupScreen() {
 }
 
 const styles = StyleSheet.create({
-  // original styles kept for compatibility; Tailwind classes do the visual heavy lifting
+  // Presentational-only styles; Tailwind still handles most visuals
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
@@ -198,13 +232,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#1E88E5',
+    color: '#065f46', // emerald-800-ish
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: '#0f766e', // teal/emerald tint
     marginBottom: 32,
     textAlign: 'center',
   },
@@ -217,37 +251,34 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: '#065f46',
     marginBottom: 8,
   },
   input: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
+    borderColor: '#a7f3d0', // emerald-200-ish
+    borderRadius: 16,
     padding: 16,
     fontSize: 16,
-    color: '#333',
+    color: '#064e3b',
   },
   signupButton: {
-    backgroundColor: '#1E88E5',
+    backgroundColor: '#059669', // emerald-600-ish
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
     marginTop: 8,
-    shadowColor: '#1E88E5',
+    shadowColor: '#059669',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 5,
-  },
-  signupButtonDisabled: {
-    opacity: 0.6,
   },
   signupButtonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   linkButton: {
     marginTop: 24,
@@ -255,10 +286,10 @@ const styles = StyleSheet.create({
   },
   linkText: {
     fontSize: 14,
-    color: '#666',
+    color: '#065f46',
   },
   linkTextBold: {
-    color: '#1E88E5',
-    fontWeight: '600',
+    color: '#065f46',
+    fontWeight: '800',
   },
 });
