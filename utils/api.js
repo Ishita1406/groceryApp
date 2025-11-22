@@ -13,7 +13,9 @@ const getApiUrl = () => {
   }
 
   // For physical devices (Android/iOS)
-  return "http://192.168.3.13:3000"; 
+  // return "http://192.168.3.13:3000"; 
+  return "http://10.51.13.153:3000";
+
 };
 
 

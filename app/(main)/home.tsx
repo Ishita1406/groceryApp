@@ -119,7 +119,7 @@ const home = () => {
 
         
         {/* BEST SELLERS */}
-        {/* <View className="px-4 py-4">
+        <View className="px-4 py-4">
           <View className="flex-row items-center justify-between mb-3">
             <Text className="text-lg font-bold text-gray-800">
               Best Sellers
@@ -168,7 +168,7 @@ const home = () => {
           />
         </View>
 
-        {/* EXTRA SPACE */}
+        {/* EXTRA SPACE  */}
        
       </ScrollView>
     </SafeAreaView>

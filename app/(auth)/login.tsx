@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import { authApi, saveToken } from '@/utils/api';
 
 
 export default function LoginScreen() {
@@ -8,29 +9,63 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
+  const [error, setError] = useState('')
+  
+  
+     const handleLogin = async ()=>{
+      // Reset error
+      setError('');
+  
+      // Validation
+  
+      if (!email.trim()) {
+        setError('Please enter your email');
+        return;
+      }
+  
+      if (!email.includes('@')) {
+        setError('Please enter a valid email address');
+        return;
+      }
+  
+      if (!password || password.length < 6) {
+        setError('Password must be at least 6 characters long');
+        return;
+      }
+  
+      setLoading(true);
+  
+      try {
+        const response = await authApi.login(email.trim(), password);
+        
+        if (response.success && response.data?.token) {
+          // Save token
+          console.log("Login response:", response);
+  
+          await saveToken(response.data.token);
+          
+          // Show success message
+          Alert.alert("Success", "Logged in successfully!");
+  
+          // Navigate immediately after alert
+          if (Platform.OS === "web") {
+            // router.push("/(main)/home");
+            router.push("/(main)/product");
+          } else {
+            // router.replace("/(main)/home");
+            router.replace("/(main)/product");
+          }
+  
+        } else {
+          setError(response.message || 'Login failed. Please try again.');
+        }
+      } catch (error) {
+        console.error("Error on Login:", error);
+       
+      } finally {
+        setLoading(false);
+      }
     }
-
-    setLoading(true);
-    // try {
-    //   const response = await authAPI.login(email, password);
-      
-    //   if (response.success) {
-    //     Alert.alert('Success', 'Login successful!');
-    //     router.replace('/(tabs)/home' as any);
-    //   } else {
-    //     Alert.alert('Error', response.message || 'Login failed');
-    //   }
-    // } catch (error: any) {
-    //   Alert.alert('Error', error?.message || 'Something went wrong. Please try again.');
-    // } finally {
-    //   setLoading(false);
-    // }
-  };
 
   return (
     <KeyboardAvoidingView 
